@@ -186,9 +186,7 @@ def render_quiz(topic_questions):
                     if os.path.exists(full_path):
                         st.image(full_path, width="stretch")
 
-            chosen_val = None
             if chosen_label:
-                chosen_val = options[labels.index(chosen_label)]
                 st.session_state['answers'][idx] = chosen_val
 
             if st.button("✅ Відповісти", type="primary", width="stretch", disabled=(chosen_label is None)):
