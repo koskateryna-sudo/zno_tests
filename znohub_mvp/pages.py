@@ -166,12 +166,12 @@ def render_quiz(topic_questions):
 
     saved_answer = st.session_state['answers'].get(idx)
 
-   if q['type'] == 'image_choice':
+    if q['type'] == 'image_choice':
         labels = ['А', 'Б', 'В', 'Г']
-    
+
         if not already_confirmed:
             radio_idx = options.index(saved_answer) if saved_answer in options else None
-    
+
             chosen_label = st.radio(
                 "Обери відповідь:",
                 labels,
@@ -179,7 +179,7 @@ def render_quiz(topic_questions):
                 horizontal=True,
                 key=f"radio_{idx}"
             )
-    
+
             cols = st.columns(4)
             for i, img_path in enumerate(options):
                 with cols[i]:
@@ -188,19 +188,19 @@ def render_quiz(topic_questions):
                     full_path = os.path.join(current_dir, img_path)
                     if os.path.exists(full_path):
                         st.image(full_path, width="stretch")
-    
+
             if chosen_label:
                 st.session_state['answers'][idx] = options[labels.index(chosen_label)]
-    
+
             if st.button(
                 "✅ Відповісти",
                 type="primary",
-                width="stretch",
+                use_container_width=True,
                 disabled=(chosen_label is None)
             ):
                 st.session_state['confirmed'].add(idx)
                 st.rerun()
-    
+
         else:
             cols = st.columns(4)
             for i, img_path in enumerate(options):
@@ -223,39 +223,39 @@ def render_quiz(topic_questions):
                     else:
                         if os.path.exists(full_path):
                             st.image(full_path, width="stretch")
-    
+
             if idx < total - 1:
-                if st.button("Далі ➡️", type="primary", width="stretch"):
+                if st.button("Далі ➡️", type="primary", use_container_width=True):
                     st.session_state['current_question'] += 1
                     st.rerun()
             else:
-                if st.button("🏁 Завершити тест", type="primary", width="stretch"):
+                if st.button("🏁 Завершити тест", type="primary", use_container_width=True):
                     st.session_state['page'] = 'results'
                     st.rerun()
-    
+
     else:
         if not already_confirmed:
             radio_idx = options.index(saved_answer) if saved_answer in options else None
-    
+
             chosen = st.radio(
                 "Обери відповідь:",
                 options,
                 index=radio_idx,
                 key=f"radio_{idx}"
             )
-    
+
             if chosen:
                 st.session_state['answers'][idx] = chosen
-    
+
             if st.button(
                 "✅ Відповісти",
                 type="primary",
-                width="stretch",
+                use_container_width=True,
                 disabled=(chosen is None)
             ):
                 st.session_state['confirmed'].add(idx)
                 st.rerun()
-    
+
         else:
             for opt in options:
                 if opt == saved_answer and opt == correct:
@@ -266,30 +266,30 @@ def render_quiz(topic_questions):
                     st.success(f"✅ {opt}  ← правильна відповідь")
                 else:
                     st.markdown(f"○ {opt}")
-    
+
             if idx < total - 1:
-                if st.button("Далі ➡️", type="primary", width="stretch"):
+                if st.button("Далі ➡️", type="primary", use_container_width=True):
                     st.session_state['current_question'] += 1
                     st.rerun()
             else:
-                if st.button("🏁 Завершити тест", type="primary", width="stretch"):
+                if st.button("🏁 Завершити тест", type="primary", use_container_width=True):
                     st.session_state['page'] = 'results'
                     st.rerun()
-    
+
     st.divider()
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("⬅️ Назад", width="stretch", disabled=(idx == 0)):
+        if st.button("⬅️ Назад", use_container_width=True, disabled=(idx == 0)):
             if idx > 0:
                 st.session_state['current_question'] -= 1
                 st.rerun()
     with col2:
-        if st.button("Пропустити ⏭️", width="stretch", disabled=(idx == total - 1)):
+        if st.button("Пропустити ⏭️", use_container_width=True, disabled=(idx == total - 1)):
             if idx < total - 1:
                 st.session_state['current_question'] += 1
                 st.rerun()
     with col3:
-        if st.button("Завершити 🛑", width="stretch"):
+        if st.button("Завершити 🛑", use_container_width=True):
             st.session_state['page'] = 'results'
             st.rerun()
 
