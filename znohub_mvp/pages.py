@@ -17,8 +17,10 @@ def render_home(questions):
         for i, (topic, data) in enumerate(earned.items()):
             b = BADGES.get(topic, {})
             with cols[i]:
-                if os.path.exists(b.get("image", "")):
-                    st.image(b["image"], width=120)
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                badge_path = os.path.join(current_dir, b.get("image", ""))
+                if os.path.exists(badge_path):
+                    st.image(badge_path, width=120)
                 else:
                     st.markdown(f"<div style='font-size:64px;text-align:center'>{b.get('emoji','🏅')}</div>", unsafe_allow_html=True)
                 st.markdown(f"<div style='text-align:center'><b>{b.get('title','')}</b><br><small>{data['earned_at']}</small></div>", unsafe_allow_html=True)
@@ -153,7 +155,10 @@ def render_quiz(topic_questions):
 
     if pd.notna(q.get('image')) and str(q.get('image', '')).strip() not in ('', 'nan'):
         if q['type'] != 'image_choice':
-            st.image(str(q['image']).strip(), width=600)
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            img_path = os.path.join(current_dir, str(q['image']).strip())
+            if os.path.exists(img_path):
+                st.image(img_path, width=600)
 
     options = [q['option1'], q['option2'], q['option3'], q['option4']]
     correct = q['answer']
@@ -176,7 +181,10 @@ def render_quiz(topic_questions):
             for i, img_path in enumerate(options):
                 with cols[i]:
                     st.markdown(f"**{labels[i]}**")
-                    st.image(img_path, width="stretch")
+                    current_dir = os.path.dirname(os.path.abspath(__file__))
+                    full_path = os.path.join(current_dir, img_path)
+                    if os.path.exists(full_path):
+                        st.image(full_path, width="stretch")
 
             chosen_val = None
             if chosen_label:
@@ -187,19 +195,25 @@ def render_quiz(topic_questions):
                 st.session_state['confirmed'].add(idx)
                 st.rerun()
 
-        else:
-            cols = st.columns(4)
-            for i, img_path in enumerate(options):
-                with cols[i]:
-                    st.markdown(f"**{labels[i]}**")
-                    if img_path == saved_answer and img_path == correct:
-                        st.image(img_path, width="stretch"); st.success("✅ Твій вибір")
-                    elif img_path == saved_answer:
-                        st.image(img_path, width="stretch"); st.error("❌ Твій вибір")
-                    elif img_path == correct:
-                        st.image(img_path, width="stretch"); st.success("✅ Правильно")
-                    else:
-                        st.image(img_path, width="stretch")
+            else:
+                cols = st.columns(4)
+                for i, img_path in enumerate(options):
+                    current_dir = os.path.dirname(os.path.abspath(__file__))
+                    full_path = os.path.join(current_dir, img_path)
+                    with cols[i]:
+                        st.markdown(f"**{labels[i]}**")
+                        if img_path == saved_answer and img_path == correct:
+                            if os.path.exists(full_path):
+                                st.image(full_path, width="stretch"); st.success("✅ Твій вибір")
+                        elif img_path == saved_answer:
+                            if os.path.exists(full_path):
+                                st.image(full_path, width="stretch"); st.error("❌ Твій вибір")
+                        elif img_path == correct:
+                            if os.path.exists(full_path):
+                                st.image(full_path, width="stretch"); st.success("✅ Правильно")
+                        else:
+                            if os.path.exists(full_path):
+                                st.image(full_path, width="stretch")
 
             if idx < total - 1:
                 if st.button("Далі ➡️", type="primary", width="stretch"):
@@ -299,8 +313,10 @@ def render_results(topic_questions):
                         {'🏅 Бейдж вже твій!' if already_had else '🏅 Бейдж отримано!'}
                     </div>
                 """, unsafe_allow_html=True)
-                if os.path.exists(badge["image"]):
-                    st.image(badge["image"], width=160)
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                badge_path = os.path.join(current_dir, badge["image"])
+                if os.path.exists(badge_path):
+                    st.image(badge_path, width=160)
                 else:
                     st.markdown(f"<div style='font-size:80px;text-align:center'>{badge['emoji']}</div>", unsafe_allow_html=True)
                 st.markdown(f"""
