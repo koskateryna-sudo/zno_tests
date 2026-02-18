@@ -166,17 +166,20 @@ def render_quiz(topic_questions):
 
     saved_answer = st.session_state['answers'].get(idx)
 
-    if q['type'] == 'image_choice':
+   if q['type'] == 'image_choice':
         labels = ['А', 'Б', 'В', 'Г']
-
+    
         if not already_confirmed:
             radio_idx = options.index(saved_answer) if saved_answer in options else None
-
-            chosen_label = st.radio("Обери відповідь:", labels,
-                                    index=radio_idx,
-                                    horizontal=True,
-                                    key=f"radio_{idx}")
-
+    
+            chosen_label = st.radio(
+                "Обери відповідь:",
+                labels,
+                index=radio_idx,
+                horizontal=True,
+                key=f"radio_{idx}"
+            )
+    
             cols = st.columns(4)
             for i, img_path in enumerate(options):
                 with cols[i]:
@@ -185,80 +188,110 @@ def render_quiz(topic_questions):
                     full_path = os.path.join(current_dir, img_path)
                     if os.path.exists(full_path):
                         st.image(full_path, width="stretch")
-
+    
             if chosen_label:
-                st.session_state['answers'][idx] = chosen_val
-
-            if st.button("✅ Відповісти", type="primary", width="stretch", disabled=(chosen_label is None)):
+                st.session_state['answers'][idx] = options[labels.index(chosen_label)]
+    
+            if st.button(
+                "✅ Відповісти",
+                type="primary",
+                width="stretch",
+                disabled=(chosen_label is None)
+            ):
                 st.session_state['confirmed'].add(idx)
                 st.rerun()
-
-            else:
-                cols = st.columns(4)
-                for i, img_path in enumerate(options):
-                    current_dir = os.path.dirname(os.path.abspath(__file__))
-                    full_path = os.path.join(current_dir, img_path)
-                    with cols[i]:
-                        st.markdown(f"**{labels[i]}**")
-                        if img_path == saved_answer and img_path == correct:
-                            if os.path.exists(full_path):
-                                st.image(full_path, width="stretch"); st.success("✅ Твій вибір")
-                        elif img_path == saved_answer:
-                            if os.path.exists(full_path):
-                                st.image(full_path, width="stretch"); st.error("❌ Твій вибір")
-                        elif img_path == correct:
-                            if os.path.exists(full_path):
-                                st.image(full_path, width="stretch"); st.success("✅ Правильно")
-                        else:
-                            if os.path.exists(full_path):
-                                st.image(full_path, width="stretch")
-
+    
+        else:
+            cols = st.columns(4)
+            for i, img_path in enumerate(options):
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                full_path = os.path.join(current_dir, img_path)
+                with cols[i]:
+                    st.markdown(f"**{labels[i]}**")
+                    if img_path == saved_answer and img_path == correct:
+                        if os.path.exists(full_path):
+                            st.image(full_path, width="stretch")
+                            st.success("✅ Твій вибір")
+                    elif img_path == saved_answer:
+                        if os.path.exists(full_path):
+                            st.image(full_path, width="stretch")
+                            st.error("❌ Твій вибір")
+                    elif img_path == correct:
+                        if os.path.exists(full_path):
+                            st.image(full_path, width="stretch")
+                            st.success("✅ Правильно")
+                    else:
+                        if os.path.exists(full_path):
+                            st.image(full_path, width="stretch")
+    
             if idx < total - 1:
                 if st.button("Далі ➡️", type="primary", width="stretch"):
-                    st.session_state['current_question'] += 1; st.rerun()
+                    st.session_state['current_question'] += 1
+                    st.rerun()
             else:
                 if st.button("🏁 Завершити тест", type="primary", width="stretch"):
-                    st.session_state['page'] = 'results'; st.rerun()
-
+                    st.session_state['page'] = 'results'
+                    st.rerun()
+    
     else:
         if not already_confirmed:
             radio_idx = options.index(saved_answer) if saved_answer in options else None
-
-            chosen = st.radio("Обери відповідь:", options,
-                              index=radio_idx,
-                              key=f"radio_{idx}")
-
+    
+            chosen = st.radio(
+                "Обери відповідь:",
+                options,
+                index=radio_idx,
+                key=f"radio_{idx}"
+            )
+    
             if chosen:
                 st.session_state['answers'][idx] = chosen
-
-            if st.button("✅ Відповісти", type="primary", width="stretch", disabled=(chosen is None)):
+    
+            if st.button(
+                "✅ Відповісти",
+                type="primary",
+                width="stretch",
+                disabled=(chosen is None)
+            ):
                 st.session_state['confirmed'].add(idx)
                 st.rerun()
+    
         else:
             for opt in options:
-                if opt == saved_answer and opt == correct:   st.success(f"✅ {opt}")
-                elif opt == saved_answer:                    st.error(f"❌ {opt}")
-                elif opt == correct:                         st.success(f"✅ {opt}  ← правильна відповідь")
-                else:                                        st.markdown(f"○ {opt}")
-
+                if opt == saved_answer and opt == correct:
+                    st.success(f"✅ {opt}")
+                elif opt == saved_answer:
+                    st.error(f"❌ {opt}")
+                elif opt == correct:
+                    st.success(f"✅ {opt}  ← правильна відповідь")
+                else:
+                    st.markdown(f"○ {opt}")
+    
             if idx < total - 1:
                 if st.button("Далі ➡️", type="primary", width="stretch"):
-                    st.session_state['current_question'] += 1; st.rerun()
+                    st.session_state['current_question'] += 1
+                    st.rerun()
             else:
                 if st.button("🏁 Завершити тест", type="primary", width="stretch"):
-                    st.session_state['page'] = 'results'; st.rerun()
-
+                    st.session_state['page'] = 'results'
+                    st.rerun()
+    
     st.divider()
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("⬅️ Назад", width="stretch", disabled=(idx==0)):
-            if idx > 0: st.session_state['current_question'] -= 1; st.rerun()
+        if st.button("⬅️ Назад", width="stretch", disabled=(idx == 0)):
+            if idx > 0:
+                st.session_state['current_question'] -= 1
+                st.rerun()
     with col2:
         if st.button("Пропустити ⏭️", width="stretch", disabled=(idx == total - 1)):
-            if idx < total - 1: st.session_state['current_question'] += 1; st.rerun()
+            if idx < total - 1:
+                st.session_state['current_question'] += 1
+                st.rerun()
     with col3:
         if st.button("Завершити 🛑", width="stretch"):
-            st.session_state['page'] = 'results'; st.rerun()
+            st.session_state['page'] = 'results'
+            st.rerun()
 
 
 def render_results(topic_questions):
